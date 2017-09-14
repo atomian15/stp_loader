@@ -3,60 +3,68 @@
 #include<string.h>
 #include"structs.h"
 
-void readHeader3Dgrid(stp_t*);
-void readBinary3Dgrid(stp_t*);
-void printCSV3Dgrid(stp_t*,char*);
-void gp_plot2D3Dgrid(stp_t*,char*);
+#define STR_SIZE 128
 
-void readHeaderTopoWSxM(stp_t*);
-void readBinaryTopoWSxM(stp_t*);
-void printCSVTopo(stp_t*,char*);
-void gp_plot2DTopo(stp_t*,char*);
+void xyzSelector(stp_t*);      // Topo or ZX
+void datatypeSelector(stp_t*); // short (Alpha) or double (WSxM)
 
-void readHeaderTopoAlpha(stp_t*);
-void readBinaryTopoAlpha(stp_t*);
+void readHeaderTopo(stp_t*);
+void readHeaderZX(stp_t*);
 
-int main(void)
+void readBinaryTopo(stp_t*);
+void readBinaryZX(stp_t*);
+
+void printCSVTopo(stp_t*);
+void printCSVZX(stp_t*);
+
+void gp_plotTopo(stp_t*);
+void gp_plotZX(stp_t*);
+
+int main(int argc,char *argv[])
 {
   stp_t test = {0};
-/*
-  char *fname = "sample.stp";
-  char *outfname = "data.csv";
-
-
-  test.name = fname;
-
-  readHeader3Dgrid(&test);
-  readBinary3Dgrid(&test);
-  printCSV3Dgrid(&test,outfname);
-
-  gp_plot2D3Dgrid(&test,outfname);
-
-  memset(&test,0,sizeof(stp_t));
-
-  char *fname_topo = "sample_topo.stp";
-  char *outfname_topo = "data_topo.csv";
-
-  test.name = fname_topo;
-
-  readHeaderTopoWSxM(&test);
-  readBinaryTopoAlpha(&test);
-  printCSVTopo(&test,outfname_topo);
-
-  gp_plot2DTopo(&test,outfname_topo);
   
-  memset(&test,0,sizeof(stp_t));
-*/
-  char *fname_topo_alpha = "topo_alpha.stp";
-  char *outfname_topo_alpha = "data_topo_alpha.csv";
+  char outname[] = "outname.csv";
+  test.csvname = outname;
+  
+  test.name = argv[1];
+  
+  xyzSelector(&test);
+  datatypeSelector(&test);
+  
+  if(test.xyz_mode == 1){
+    readHeaderTopo(&test);
+    printf("%d\n",test.h_size);
+    printf("%e\n",test.X_range);
+    printf("%d\n",test.X_point);
+    printf("%e\n",test.Y_range);
+    printf("%d\n",test.Y_point);
+    printf("%e\n",test.Z_const);
+    printf("%e\n",test.PZ_GAIN);
+    printf("%d\n",test.data_type);  
+    readBinaryTopo(&test);
+    printCSVTopo(&test);
+    gp_plotTopo(&test);
+  }else{
+    readHeaderZX(&test);
+    printf("%d\n",test.h_size);
+    printf("%e\n",test.X_range);
+    printf("%d\n",test.X_point);
+    printf("%e\n",test.Z_range);
+    printf("%d\n",test.Z_point);
+    printf("%e\n",test.Z_const);
+    printf("%e\n",test.PZ_GAIN);
+    printf("%d\n",test.data_type);  
+    readBinaryZX(&test);
+    printCSVZX(&test);
+    gp_plotZX(&test);
+  }
+  
+  //readHeaderTopoAlpha(&test);
+  //readBinaryTopoAlpha(&test);
+  //printCSVTopo(&test,outfname_topo_alpha);
 
-  test.name = fname_topo_alpha;
-
-  readHeaderTopoAlpha(&test);
-//  readBinaryTopoAlpha(&test);
-//  printCSVTopo(&test,outfname_topo_alpha);
-
-//  gp_plot2DTopo(&test,outfname_topo_alpha);
+  //gp_plot2DTopo(&test,outfname_topo_alpha);
 
   free(test.data);
   return 0;

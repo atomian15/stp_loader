@@ -2,12 +2,12 @@
 #include<stdlib.h>
 #include"structs.h"
 
-extern void printCSV3Dgrid(stp_t *test,char *outfname)
+extern void printCSVZX(stp_t *test)
 {
   int i,j;
 
   FILE *fp;
-  if((fp = fopen(outfname,"w")) == NULL){
+  if((fp = fopen(test->csvname,"w")) == NULL){
     printf("FILE ERROR\n");
     exit(1);
   }
@@ -21,12 +21,12 @@ extern void printCSV3Dgrid(stp_t *test,char *outfname)
   fclose(fp);
 }
 
-extern void printCSVTopo(stp_t *test,char *outfname)
+extern void printCSVTopo(stp_t *test)
 {
   int i,j;
 
   FILE *fp;
-  if((fp = fopen(outfname,"w")) == NULL){
+  if((fp = fopen(test->csvname,"w")) == NULL){
     printf("FILE ERROR\n");
     exit(1);
   }
